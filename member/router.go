@@ -1,5 +1,0 @@
-package member
-
-func Router() {
-
-}

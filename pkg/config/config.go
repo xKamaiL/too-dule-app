@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"github.com/acoshift/configfile"
@@ -19,7 +19,7 @@ type Config struct {
 
 var config Config
 
-func ConfigInit() {
+func Init() {
 	r := configfile.NewEnvReader()
 	config.DB.Host = r.String("DB_HOST")
 	config.DB.Port = r.Int("DB_PORT")
@@ -30,6 +30,6 @@ func ConfigInit() {
 	config.RedisHost = r.String("REDIS_HOST")
 }
 
-func ConfigLoad() *Config {
+func Load() *Config {
 	return &config
 }

@@ -6,13 +6,14 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/moonrhythm/hime"
 	"github.com/xkamail/too-dule-app/app"
+	"github.com/xkamail/too-dule-app/pkg/config"
 	"log"
 	"runtime"
 )
 
 func main() {
-	app.ConfigInit()
-	cfg := app.ConfigLoad()
+	config.Init()
+	cfg := config.Load()
 
 	// loc, err := time.LoadLocation("Asia/Bangkok")
 	// if err != nil {
@@ -38,7 +39,7 @@ func main() {
 	fmt.Println("Serve: 8080")
 
 	err = himeApp.
-		Handler(app.New(himeApp)).
+		Handler(app.New(himeApp, db)).
 		Address(":8080").
 		ListenAndServe()
 
