@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/moonrhythm/hime"
-	"github.com/xkamail/too-dule-app/utils"
+	"github.com/xkamail/too-dule-app/pkg/utils"
 	"log"
 	"net/http"
 	"runtime/debug"

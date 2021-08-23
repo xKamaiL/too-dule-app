@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/xkamail/too-dule-app/utils"
+	"github.com/xkamail/too-dule-app/pkg/utils"
 	"net/http"
 )
 

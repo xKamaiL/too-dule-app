@@ -1,7 +1,7 @@
 package todo
 
 import (
-	"github.com/xkamail/too-dule-app/pkg/member"
+	"github.com/xkamail/too-dule-app/member"
 	"time"
 )
 

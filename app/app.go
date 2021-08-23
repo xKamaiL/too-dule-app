@@ -7,7 +7,7 @@ import (
 	"github.com/acoshift/pgsql/pgctx"
 	"github.com/gorilla/mux"
 	"github.com/moonrhythm/hime"
-	"github.com/xkamail/too-dule-app/middlewares"
+	"github.com/xkamail/too-dule-app/pkg/middlewares"
 	"net/http"
 )
 
@@ -27,14 +27,20 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 	apiRoute.Use(middlewares.Logging)
 
 	{
-		memberRouter := apiRoute.PathPrefix("/member").Subrouter()
-		memberRouter.Get("/list")
+		// memberRouter := apiRoute.PathPrefix("/member").Subrouter()
+		// memberRouter.Handle("/register", hime.Handler()).Methods(http.MethodPost)
+
+		// memberRouter.Handle("/sign-in", hime.Handler()).Methods(http.MethodPost)
 	}
 
 	{
 		t := newTodoWrap()
 		todoRouter := apiRoute.PathPrefix("/todo").Subrouter()
-		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods("GET")
+		todoRouter.Use(middlewares.MemberAuthorization)
+		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
+
+		todoRouter.Handle("/", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
+
 	}
 
 	return mw.Chain(
