@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/moonrhythm/hime"
 	"github.com/xkamail/too-dule-app/app"
@@ -31,10 +30,6 @@ func main() {
 	maxConns := runtime.NumCPU() * 4
 	db.SetMaxIdleConns(maxConns)
 	db.SetMaxOpenConns(maxConns)
-
-	router := mux.NewRouter()
-
-	router.Get("/")
 
 	himeApp := hime.New()
 
