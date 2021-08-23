@@ -1,0 +1,5 @@
+package member
+
+func Router() {
+
+}
