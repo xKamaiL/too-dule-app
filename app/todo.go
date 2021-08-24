@@ -18,7 +18,6 @@ type todoWrap struct {
 
 func newTodoWrap() todoWrap {
 	validate = validator.New()
-	// _ = validate.RegisterValidation("datetime", validators.IsRFC3339V1)
 
 	return todoWrap{
 		t: todo.NewTodo(),
