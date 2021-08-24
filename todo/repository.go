@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/acoshift/pgsql"
 	"github.com/acoshift/pgsql/pgctx"
+	"github.com/xkamail/too-dule-app/member"
+	"log"
 	"time"
 )
 
@@ -22,13 +24,20 @@ func (r Repository) FindAll(ctx context.Context) ([]*Todo, error) {
 	// language=SQL
 	err := pgctx.Iter(ctx, func(scan pgsql.Scanner) error {
 		var t Todo
-		if err := scan(&t.ID, &t.OwnerID, &t.Content, &t.IsActive, &t.DueDate, &t.CreatedAt); err != nil {
+		var m member.Member
+		t.Owner = &m
+		if err := scan(&t.ID, &t.OwnerID, &t.Content, &t.IsActive, &t.DueDate, &t.CreatedAt, &t.Owner.ID, &t.Owner.Username, &t.Owner.Email, &t.Owner.CreatedAt); err != nil {
+			log.Println(err)
 			return err
 		}
 		result = append(result, &t)
 		return nil
-	}, `select id, owner_id, content, is_active, due_date, created_at from todos `)
+	}, `select todos.id, todos.owner_id, todos.content, todos.is_active,
+       todos.due_date,todos.created_at, members.id,members.username, members.email,members.created_at
+		from todos left join members on todos.owner_id = members.id
+		`)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	return result, nil

@@ -3,7 +3,6 @@ package member
 import (
 	"context"
 	"errors"
-	"fmt"
 )
 
 type (
@@ -15,7 +14,6 @@ func NewMemberContext(ctx context.Context, member Member) context.Context {
 }
 
 func GetMemberFromContext(ctx context.Context) (*Member, error) {
-	fmt.Println(ctx.Value(ctxMemberKey{}))
 	member, ok := ctx.Value(ctxMemberKey{}).(Member)
 	if !ok {
 		return nil, errors.New("failed to get member")

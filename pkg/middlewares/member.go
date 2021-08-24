@@ -53,7 +53,6 @@ func MemberAuthorization(next http.Handler) http.Handler {
 			return
 		}
 		newContext := member.NewMemberContext(r.Context(), *memberUser)
-		fmt.Println(memberUser.ID, "test")
 		next.ServeHTTP(w, r.WithContext(newContext))
 	})
 }

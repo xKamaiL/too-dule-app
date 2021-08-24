@@ -7,6 +7,7 @@ import (
 	"github.com/xkamail/too-dule-app/pkg/config"
 	"github.com/xkamail/too-dule-app/pkg/logger"
 	"github.com/xkamail/too-dule-app/pkg/utils"
+	"log"
 	"time"
 )
 
@@ -74,6 +75,12 @@ type LoginParam struct {
 }
 
 func (s *Service) SignIn(ctx context.Context, params LoginParam) (string, error) {
+	start := time.Now()
+
+	defer func() {
+		elapsed := time.Since(start)
+		log.Printf("SignIn took %s", elapsed)
+	}()
 	user, err := s.repo.FindByUsername(ctx, params.Username)
 	if err != nil {
 		s.l.Info(err)

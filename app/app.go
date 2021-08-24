@@ -38,6 +38,8 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 		authMemberRouter.Use(middlewares.MemberAuthorization)
 		authMemberRouter.Handle("/me", hime.Handler(t.getMe)).Methods(http.MethodGet)
 
+		// authMemberRouter.Handle("/list")
+
 	}
 
 	{
@@ -46,6 +48,8 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 		todoRouter.Use(middlewares.NeededJSONBody, middlewares.MemberAuthorization)
 		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
 
+
+		todoRouter.Use(middlewares.RateLimit(100))
 		todoRouter.Handle("", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
 
 	}

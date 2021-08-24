@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/acoshift/pgsql/pgctx"
 	"github.com/xkamail/too-dule-app/pkg/utils"
+	"log"
+	"time"
 )
 
 type Repository struct {
@@ -21,6 +23,12 @@ func (r Repository) FindByID(ctx context.Context, memberID string) (*Member, err
 }
 
 func (r Repository) FindByUsername(ctx context.Context, username string) (*Member, error) {
+	start := time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		log.Printf("FindByUsername took %s", elapsed)
+	}()
+
 	var member Member
 	// language=SQL
 	row := pgctx.QueryRow(ctx, `select id, username, email, created_at,password from members where username = $1`, username)

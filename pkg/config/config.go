@@ -16,7 +16,8 @@ type Config struct {
 	// no password require
 	RedisHost string
 	//
-	JWTSecretKey string
+	JWTSecretKey   string
+	RateLimitAllow int
 }
 
 var config Config
