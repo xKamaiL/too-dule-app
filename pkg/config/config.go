@@ -15,6 +15,8 @@ type Config struct {
 	}
 	// no password require
 	RedisHost string
+	//
+	JWTSecretKey string
 }
 
 var config Config
@@ -28,6 +30,7 @@ func Init() {
 	config.DB.Name = r.String("DB_NAME")
 
 	config.RedisHost = r.String("REDIS_HOST")
+	config.JWTSecretKey = r.StringDefault("JWT_SECRET_KEY", "xkamail")
 }
 
 func Load() *Config {
