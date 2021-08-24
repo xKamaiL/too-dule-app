@@ -18,3 +18,18 @@ func (r Repository) FindByID(ctx context.Context, memberID string) (*Member, err
 	}
 	return &member, nil
 }
+
+// no struct
+func (r Repository) Insert(ctx context.Context, d struct {
+	Username string
+	Password string
+	Email    string
+}) (userId string, err error) {
+	// language=SQL
+	row := pgctx.QueryRow(ctx, `insert into members (username, password, email) VALUES ($1,$2,$3)`, d.Username, d.Password, d.Email)
+	err = row.Scan(&userId)
+	if err != nil {
+		return "", err
+	}
+	return userId, nil
+}

@@ -27,10 +27,17 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 	apiRoute.Use(middlewares.Logging)
 
 	{
-		// memberRouter := apiRoute.PathPrefix("/member").Subrouter()
-		// memberRouter.Handle("/register", hime.Handler()).Methods(http.MethodPost)
+		t := newMemberWrap()
+		memberRouter := apiRoute.PathPrefix("/member").Subrouter()
+		memberRouter.Use(middlewares.NeededJSONBody)
 
-		// memberRouter.Handle("/sign-in", hime.Handler()).Methods(http.MethodPost)
+		memberRouter.Handle("/register", hime.Handler(t.postMemberRegister)).Methods(http.MethodPost)
+		memberRouter.Handle("/sign-in", hime.Handler(t.postMemberSignIn)).Methods(http.MethodPost)
+
+		authMemberRouter := memberRouter.PathPrefix("/auth").Subrouter()
+		authMemberRouter.Use(middlewares.MemberAuthorization)
+		memberRouter.Handle("/me", hime.Handler(t.getMe)).Methods(http.MethodGet)
+
 	}
 
 	{
