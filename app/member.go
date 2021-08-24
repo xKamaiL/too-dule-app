@@ -44,7 +44,7 @@ func (m *memberWrap) postMemberRegister(ctx *hime.Context) error {
 
 	accessToken, err := m.m.Create(ctx, p)
 	if err != nil {
-		return err
+		return utils.JSONError(ctx.ResponseWriter(), err.Error(), http.StatusBadRequest)
 	}
 	return ctx.JSON(map[string]interface{}{"accessToken": accessToken})
 }
