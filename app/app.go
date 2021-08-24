@@ -2,7 +2,6 @@ package app
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/acoshift/header"
 	mw "github.com/acoshift/middleware"
 	"github.com/acoshift/pgsql/pgctx"
@@ -23,9 +22,9 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 	app.ETag = true
 	cfg := config.Load()
 
-	// set ratelimit
+	// set rate limit
 	var limiter = middlewares.NewIPRateLimiter(rate.Limit(cfg.RateLimitAllow), 1)
-	fmt.Printf("New Rate Limit With: %d req per/sec\n", cfg.RateLimitAllow)
+
 	// router
 	r := mux.NewRouter()
 
@@ -41,8 +40,9 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 		memberRouter := apiRoute.PathPrefix("/member").Subrouter()
 		memberRouter.Use(middlewares.NeededJSONBody)
 
-		memberRouter.Handle("/register", hime.Handler(t.postMemberRegister)).Methods(http.MethodPost)
 		memberRouter.Handle("/sign-in", hime.Handler(t.postMemberSignIn)).Methods(http.MethodPost)
+
+		memberRouter.Handle("/register", middlewares.RateLimit(hime.Handler(t.postMemberRegister))).Methods(http.MethodPost)
 
 		authMemberRouter := memberRouter.PathPrefix("/").Subrouter()
 		authMemberRouter.Use(middlewares.MemberAuthorization)
@@ -58,8 +58,7 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 		todoRouter.Use(middlewares.NeededJSONBody, middlewares.MemberAuthorization)
 		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
 
-		todoRouter.Use(middlewares.RateLimit(100))
-		todoRouter.Handle("", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
+		todoRouter.Handle("", middlewares.RateLimit(hime.Handler(t.createNewTodo))).Methods(http.MethodPost)
 
 	}
 

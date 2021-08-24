@@ -71,22 +71,19 @@ func WithRateLimitContext(limiter *IPRateLimiter) middleware.Middleware {
 	}
 }
 
-func RateLimit(perSec int) func(h http.Handler) http.Handler {
+func RateLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip := r.Header.Get("X-Forwarded-For")
 
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ip := r.Header.Get("X-Forwarded-For")
+		rateLimit := r.Context().Value(rateLimitKey{}).(*IPRateLimiter)
 
-			rateLimit := r.Context().Value(rateLimitKey{}).(*IPRateLimiter)
+		limiter := rateLimit.GetLimiter(ip)
 
-			limiter := rateLimit.GetLimiter(ip)
+		if !limiter.Allow() {
+			_ = utils.JSONError(w, "too many request", http.StatusTooManyRequests)
+			return
+		}
 
-			if !limiter.Allow() {
-				_ = utils.JSONError(w, "too many request", http.StatusTooManyRequests)
-				return
-			}
-
-			next.ServeHTTP(w, r)
-		})
-	}
+		next.ServeHTTP(w, r)
+	})
 }
