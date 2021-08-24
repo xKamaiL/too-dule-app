@@ -69,3 +69,11 @@ func (m *memberWrap) postMemberSignIn(ctx *hime.Context) error {
 
 	return ctx.JSON(map[string]interface{}{"accessToken": accessToken})
 }
+
+func (m *memberWrap) getMemberList(ctx *hime.Context) error {
+	list, err := m.m.List(ctx)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(list)
+}

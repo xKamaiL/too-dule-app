@@ -48,3 +48,25 @@ func (t Service) List(ctx context.Context, param ListParam) ([]*Todo, error) {
 	// query, pagination , search
 	return t.repo.FindAll(ctx)
 }
+
+func (t Service) AssignToMember(ctx context.Context, todoID string, memberID string) error {
+
+	return nil
+}
+
+func (t Service) RemoveAssign(ctx context.Context, todoID string) error {
+	return nil
+}
+
+type UpdateParam struct {
+	Title   string
+	Content string
+}
+
+func (t Service) Update(ctx context.Context, params UpdateParam) error {
+	return nil
+}
+
+func (t Service) ChangeStatus(ctx context.Context, status bool) error {
+	return nil
+}

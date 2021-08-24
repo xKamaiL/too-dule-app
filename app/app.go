@@ -48,7 +48,7 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 		authMemberRouter.Use(middlewares.MemberAuthorization)
 		authMemberRouter.Handle("/me", hime.Handler(t.getMe)).Methods(http.MethodGet)
 
-		// authMemberRouter.Handle("/list")
+		authMemberRouter.Handle("/list", hime.Handler(t.getMemberList)).Methods(http.MethodGet)
 
 	}
 

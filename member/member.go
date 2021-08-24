@@ -81,13 +81,20 @@ func (s *Service) SignIn(ctx context.Context, params LoginParam) (string, error)
 		elapsed := time.Since(start)
 		log.Printf("SignIn took %s", elapsed)
 	}()
+
 	user, err := s.repo.FindByUsername(ctx, params.Username)
 	if err != nil {
 		s.l.Info(err)
 		return "", errors.New("failed to login")
 	}
+
 	if !utils.CheckPasswordHash(params.Password, user.Password) {
 		return "", errors.New("failed to login")
 	}
+
 	return CreateToken(user.ID)
+}
+
+func (s *Service) List(ctx context.Context) ([]*Member, error) {
+	return s.repo.FindAll(ctx)
 }

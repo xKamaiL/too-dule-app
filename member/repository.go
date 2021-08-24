@@ -2,6 +2,7 @@ package member
 
 import (
 	"context"
+	"github.com/acoshift/pgsql"
 	"github.com/acoshift/pgsql/pgctx"
 	"github.com/xkamail/too-dule-app/pkg/utils"
 	"log"
@@ -67,4 +68,18 @@ func (r Repository) Insert(ctx context.Context, d struct {
 		return "", err
 	}
 	return userId, nil
+}
+
+func (r Repository) FindAll(ctx context.Context) ([]*Member, error) {
+	list := make([]*Member, 0)
+	// language=SQL
+	err := pgctx.Iter(ctx, func(scan pgsql.Scanner) error {
+		var m Member
+		if err := scan(&m.ID, &m.Username, &m.Email); err != nil {
+			return err
+		}
+		list = append(list, &m)
+		return nil
+	}, `select id,username,email from members order by created_at desc `)
+	return list, err
 }
