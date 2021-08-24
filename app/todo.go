@@ -18,6 +18,8 @@ type todoWrap struct {
 
 func newTodoWrap() todoWrap {
 	validate = validator.New()
+	// _ = validate.RegisterValidation("datetime", validators.IsRFC3339V1)
+
 	return todoWrap{
 		t: todo.NewTodo(),
 	}
@@ -43,12 +45,13 @@ func (w todoWrap) createNewTodo(ctx *hime.Context) error {
 		log.Println(err)
 		return utils.ValidatorError(ctx, err)
 	}
-
+	// get from user
+	p.OwnerID = "12a6a311-f41b-4110-88b6-0b1cfb1563a2"
 	_, err = w.t.Create(ctx, p)
 	if err != nil {
 		log.Println(err)
 		return utils.JSONError(ctx.ResponseWriter(), fmt.Sprintf("create todo failed: %s", err.Error()), http.StatusBadRequest)
 	}
-	ctx.Status(http.StatusCreated)
+	ctx.ResponseWriter().WriteHeader(http.StatusCreated)
 	return nil
 }

@@ -3,6 +3,8 @@ package todo
 import (
 	"context"
 	"github.com/xkamail/too-dule-app/pkg/config"
+	"log"
+	"time"
 )
 
 type Service struct {
@@ -20,14 +22,22 @@ func NewTodo() *Service {
 }
 
 type CreateParam struct {
-	Title   string `json:"title" validate:"required,min=10,max=255"`
-	Content string `json:"content" validate:"required,min=1,max=2000"`
-	OwnerID string `json:"owner_id"`
+	Title   string     `json:"title" validate:"required,min=10,max=255"`
+	Content string     `json:"content" validate:"required,min=1,max=2000"`
+	OwnerID string     `json:"owner_id"`
+	DueDate *time.Time `json:"due_date" validate:"required"`
 }
 
 func (t Service) Create(ctx context.Context, param CreateParam) (todoID string, err error) {
-
-	return "", nil
+	id, err := t.repo.Insert(ctx, createTodoModel{
+		OwnerID:  param.OwnerID,
+		Content:  param.Content,
+		Title:    param.Title,
+		IsActive: false,
+		DueDate:  param.DueDate,
+	})
+	log.Println(err)
+	return id, err
 }
 
 // nothing

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/acoshift/pgsql"
 	"github.com/acoshift/pgsql/pgctx"
+	"time"
 )
 
 // type BaseRepository interface {
@@ -35,4 +36,21 @@ func (r Repository) FindAll(ctx context.Context) ([]*Todo, error) {
 
 func (r Repository) FindByID(ctx context.Context, id string) (Todo, error) {
 	panic("implement me")
+}
+
+type createTodoModel struct {
+	OwnerID  string
+	Title    string
+	Content  string
+	IsActive bool
+	DueDate  *time.Time
+}
+
+func (r Repository) Insert(ctx context.Context, data createTodoModel) (insertID string, err error) {
+	err = pgctx.RunInTx(ctx, func(ctx context.Context) error {
+		// language=SQL
+		row := pgctx.QueryRow(ctx, `insert into todos ( owner_id, title, content, is_active, due_date) values ($1,$2,$3,$4,$5) returning id`, data.OwnerID, data.Title, data.Content, data.IsActive, data.DueDate.Format(time.RFC3339))
+		return row.Scan(&insertID)
+	})
+	return insertID, err
 }
