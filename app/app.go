@@ -25,7 +25,7 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 
 	// set ratelimit
 	var limiter = middlewares.NewIPRateLimiter(rate.Limit(cfg.RateLimitAllow), 1)
-	fmt.Printf("New Rate Limiter With: %d per/sec\n", cfg.RateLimitAllow)
+	fmt.Printf("New Rate Limit With: %d req per/sec\n", cfg.RateLimitAllow)
 	// router
 	r := mux.NewRouter()
 

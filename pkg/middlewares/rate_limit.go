@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"fmt"
 	"github.com/acoshift/middleware"
 	"github.com/xkamail/too-dule-app/pkg/utils"
 	"golang.org/x/time/rate"
@@ -77,7 +76,6 @@ func RateLimit(perSec int) func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := r.Header.Get("X-Forwarded-For")
-			fmt.Println("Rate-Limit-For-IP: ", ip)
 
 			rateLimit := r.Context().Value(rateLimitKey{}).(*IPRateLimiter)
 
