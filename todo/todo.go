@@ -20,8 +20,8 @@ func NewTodo() *Service {
 }
 
 type CreateParam struct {
-	Title   string `json:"title" validate:"required"`
-	Content string `json:"content" validate:"required"`
+	Title   string `json:"title" validate:"required,min=10,max=255"`
+	Content string `json:"content" validate:"required,min=1,max=2000"`
 	OwnerID string `json:"owner_id"`
 }
 

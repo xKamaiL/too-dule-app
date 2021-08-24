@@ -2,14 +2,13 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/moonrhythm/hime"
 	"log"
 	"net/http"
 )
 
-func JSONError(w http.ResponseWriter, message string, statusCode int) {
+func JSONError(w http.ResponseWriter, message string, statusCode int) error {
 	resp := map[string]interface{}{}
 	resp["message"] = message
 	w.WriteHeader(statusCode)
@@ -19,21 +18,36 @@ func JSONError(w http.ResponseWriter, message string, statusCode int) {
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		log.Println(err)
+		return err
 	}
+	return nil
 }
 
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+type validationErrFields struct {
+	Name    string `json:"name"`
+	Tag     string `json:"tag"`
+	Param   string `json:"param"`
+	Message string `json:"message"`
+}
+
 type validationErrorResponse struct {
-	Errors []string `json:"errors"`
+	Errors []validationErrFields `json:"errors"`
 }
 
 func ValidatorError(ctx *hime.Context, err error) error {
-	fields := make([]string, 0)
+	fields := make([]validationErrFields, 0)
 	for _, err := range err.(validator.ValidationErrors) {
-		fields = append(fields, fmt.Sprintf("%s %s", err.Field(), err.Value()))
+		fields = append(fields, validationErrFields{
+			Name:    err.Field(),
+			Tag:     err.Tag(),
+			Param:   err.Param(),
+			Message: err.Error(),
+		})
 	}
+	ctx.Status(http.StatusUnprocessableEntity)
 	return ctx.JSON(validationErrorResponse{Errors: fields})
 }

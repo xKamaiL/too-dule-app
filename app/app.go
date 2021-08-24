@@ -36,10 +36,10 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 	{
 		t := newTodoWrap()
 		todoRouter := apiRoute.PathPrefix("/todo").Subrouter()
-		todoRouter.Use(middlewares.MemberAuthorization)
+		todoRouter.Use(middlewares.NeededJSONBody, middlewares.MemberAuthorization)
 		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
 
-		todoRouter.Handle("/", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
+		todoRouter.Handle("", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
 
 	}
 
