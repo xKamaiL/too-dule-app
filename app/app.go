@@ -2,20 +2,30 @@ package app
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/acoshift/header"
 	mw "github.com/acoshift/middleware"
 	"github.com/acoshift/pgsql/pgctx"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/moonrhythm/hime"
+	"github.com/xkamail/too-dule-app/pkg/config"
 	"github.com/xkamail/too-dule-app/pkg/middlewares"
+	pkgRedis "github.com/xkamail/too-dule-app/pkg/redis"
+	"golang.org/x/time/rate"
 	"net/http"
 )
 
 /*
 	New App...
 */
-func New(app *hime.App, db *sql.DB) http.Handler {
+func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 	app.ETag = true
+	cfg := config.Load()
+
+	// set ratelimit
+	var limiter = middlewares.NewIPRateLimiter(rate.Limit(cfg.RateLimitAllow), 1)
+	fmt.Printf("New Rate Limiter With: %d per/sec\n", cfg.RateLimitAllow)
 	// router
 	r := mux.NewRouter()
 
@@ -48,7 +58,6 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 		todoRouter.Use(middlewares.NeededJSONBody, middlewares.MemberAuthorization)
 		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
 
-
 		todoRouter.Use(middlewares.RateLimit(100))
 		todoRouter.Handle("", hime.Handler(t.createNewTodo)).Methods(http.MethodPost)
 
@@ -57,7 +66,9 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 	return mw.Chain(
 		middlewares.PanicRecovery,
 		middlewares.NoCORS,
+		middlewares.WithRateLimitContext(limiter),
 		pgctx.Middleware(db),
+		pkgRedis.Middleware(redisClient),
 	)(r)
 }
 

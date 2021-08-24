@@ -14,7 +14,12 @@ type Config struct {
 		Name     string
 	}
 	// no password require
-	RedisHost string
+	Redis struct {
+		Addr     string
+		Username string
+		Password string
+		Port     int
+	}
 	//
 	JWTSecretKey   string
 	RateLimitAllow int
@@ -30,8 +35,12 @@ func Init() {
 	config.DB.Password = r.String("DB_PASSWORD")
 	config.DB.Name = r.String("DB_NAME")
 
-	config.RedisHost = r.String("REDIS_HOST")
+	config.Redis.Addr = r.String("REDIS_HOST")
+	config.Redis.Username = r.String("REDIS_USERNAME")
+	config.Redis.Password = r.String("REDIS_PASSWORD")
+
 	config.JWTSecretKey = r.StringDefault("JWT_SECRET_KEY", "xkamail")
+	config.RateLimitAllow = r.IntDefault("RATE_LIMIT_ALLOW", 100)
 }
 
 func Load() *Config {

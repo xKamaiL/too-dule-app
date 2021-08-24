@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/go-redis/redis/v8"
 	_ "github.com/lib/pq"
 	"github.com/moonrhythm/hime"
 	"github.com/xkamail/too-dule-app/app"
@@ -32,6 +33,14 @@ func main() {
 	db.SetMaxIdleConns(maxConns)
 	db.SetMaxOpenConns(maxConns)
 
+
+	// start redis
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Addr,
+		Username: cfg.Redis.Username,
+		Password: cfg.Redis.Password,
+	})
+
 	himeApp := hime.New()
 
 	himeApp.GracefulShutdown()
@@ -39,7 +48,7 @@ func main() {
 	fmt.Println("Serve: 8080")
 
 	err = himeApp.
-		Handler(app.New(himeApp, db)).
+		Handler(app.New(himeApp, db, redisClient)).
 		Address(":8080").
 		ListenAndServe()
 
