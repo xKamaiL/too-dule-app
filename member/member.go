@@ -76,6 +76,7 @@ type LoginParam struct {
 func (s *Service) SignIn(ctx context.Context, params LoginParam) (string, error) {
 	user, err := s.repo.FindByUsername(ctx, params.Username)
 	if err != nil {
+		s.l.Info(err)
 		return "", errors.New("failed to login")
 	}
 	if !utils.CheckPasswordHash(params.Password, user.Password) {

@@ -20,11 +20,12 @@ func (r Repository) FindByID(ctx context.Context, memberID string) (*Member, err
 	return &member, nil
 }
 
+
 func (r Repository) FindByUsername(ctx context.Context, username string) (*Member, error) {
 	var member Member
 	// language=SQL
-	row := pgctx.QueryRow(ctx, `select id, username, email, created_at from members where username = $1`, username)
-	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt)
+	row := pgctx.QueryRow(ctx, `select id, username, email, created_at,password from members where username = $1`, username)
+	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt, &member.Password)
 	if err != nil {
 		return nil, err
 	}
