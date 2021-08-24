@@ -69,8 +69,8 @@ func (s *Service) Create(ctx context.Context, params CreateMemberParam) (string,
 }
 
 type LoginParam struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,min=4"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
 func (s *Service) SignIn(ctx context.Context, params LoginParam) (string, error) {

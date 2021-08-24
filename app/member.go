@@ -49,5 +49,23 @@ func (m *memberWrap) postMemberRegister(ctx *hime.Context) error {
 	return ctx.JSON(map[string]interface{}{"accessToken": accessToken})
 }
 func (m *memberWrap) postMemberSignIn(ctx *hime.Context) error {
-	return ctx.JSON("asd")
+	var p member.LoginParam
+
+	err := ctx.BindJSON(&p)
+	if err != nil {
+		return utils.JSONError(ctx.ResponseWriter(), fmt.Sprintf("json error %s", err.Error()), http.StatusInternalServerError)
+	}
+
+	err = validate.Struct(p)
+	if err != nil {
+		log.Println(err)
+		return utils.ValidatorError(ctx, err)
+	}
+
+	accessToken, err := m.m.SignIn(ctx, p)
+	if err != nil {
+		return utils.JSONError(ctx.ResponseWriter(), err.Error(), http.StatusBadRequest)
+	}
+
+	return ctx.JSON(map[string]interface{}{"accessToken": accessToken})
 }
