@@ -12,14 +12,13 @@ type Repository struct {
 func (r Repository) FindByID(ctx context.Context, memberID string) (*Member, error) {
 	var member Member
 	// language=SQL
-	row := pgctx.QueryRow(ctx, `select id, username, email, created_at from members where id = $1`, memberID)
-	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt)
+	row := pgctx.QueryRow(ctx, `select id, username, email, created_at,password from members where id = $1`, memberID)
+	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt, &member.Password)
 	if err != nil {
 		return nil, err
 	}
 	return &member, nil
 }
-
 
 func (r Repository) FindByUsername(ctx context.Context, username string) (*Member, error) {
 	var member Member
@@ -35,8 +34,8 @@ func (r Repository) FindByUsername(ctx context.Context, username string) (*Membe
 func (r Repository) FindByEmail(ctx context.Context, email string) (*Member, error) {
 	var member Member
 	// language=SQL
-	row := pgctx.QueryRow(ctx, `select id, username, email, created_at from members where email = $1`, email)
-	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt)
+	row := pgctx.QueryRow(ctx, `select id, username, email, created_at,password from members where email = $1`, email)
+	err := row.Scan(&member.ID, &member.Username, &member.Email, &member.CreatedAt, &member.Password)
 	if err != nil {
 		return nil, err
 	}
