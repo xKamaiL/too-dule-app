@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/moonrhythm/hime"
+	"github.com/xkamail/too-dule-app/member"
 	"github.com/xkamail/too-dule-app/pkg/utils"
 	"github.com/xkamail/too-dule-app/todo"
 	"log"
@@ -44,8 +45,9 @@ func (w todoWrap) createNewTodo(ctx *hime.Context) error {
 		log.Println(err)
 		return utils.ValidatorError(ctx, err)
 	}
+	user, _ := member.GetMemberFromContext(ctx)
 	// get from user
-	p.OwnerID = "12a6a311-f41b-4110-88b6-0b1cfb1563a2"
+	p.OwnerID = user.ID
 	_, err = w.t.Create(ctx, p)
 	if err != nil {
 		log.Println(err)
