@@ -34,9 +34,9 @@ func New(app *hime.App, db *sql.DB) http.Handler {
 		memberRouter.Handle("/register", hime.Handler(t.postMemberRegister)).Methods(http.MethodPost)
 		memberRouter.Handle("/sign-in", hime.Handler(t.postMemberSignIn)).Methods(http.MethodPost)
 
-		authMemberRouter := memberRouter.PathPrefix("/auth").Subrouter()
+		authMemberRouter := memberRouter.PathPrefix("/").Subrouter()
 		authMemberRouter.Use(middlewares.MemberAuthorization)
-		memberRouter.Handle("/me", hime.Handler(t.getMe)).Methods(http.MethodGet)
+		authMemberRouter.Handle("/me", hime.Handler(t.getMe)).Methods(http.MethodGet)
 
 	}
 

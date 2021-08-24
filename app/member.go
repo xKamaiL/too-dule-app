@@ -23,7 +23,7 @@ func newMemberWrap() *memberWrap {
 func (m *memberWrap) getMe(ctx *hime.Context) error {
 	mem, err := member.GetMemberFromContext(ctx)
 	if err != nil {
-		return err
+		return utils.JSONError(ctx.ResponseWriter(), "Failed to get user", http.StatusUnauthorized)
 	}
 	return ctx.JSON(mem)
 }
