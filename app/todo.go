@@ -83,7 +83,7 @@ func (w todoWrap) ChangeStatusTodo(ctx *hime.Context) error {
 
 	// quick validate
 	var p struct {
-		Status bool `json:"status" validate:"required,bool"`
+		Status bool `json:"status" validate:"required"`
 	}
 	err := ctx.BindJSON(&p)
 	if err != nil {
@@ -95,4 +95,8 @@ func (w todoWrap) ChangeStatusTodo(ctx *hime.Context) error {
 	}
 
 	return w.t.ChangeStatus(ctx, mux.Vars(ctx.Request)["todo_id"], p.Status)
+}
+
+func (w todoWrap) MakeAssign(ctx *hime.Context) error {
+
 }
