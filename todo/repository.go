@@ -15,6 +15,11 @@ import (
 // 	FindByID(id string) (Todo, error)
 // }
 
+//
+func NewRepo() *Repository {
+	return &Repository{}
+}
+
 type Repository struct {
 	// ctx context.Context
 }
@@ -85,5 +90,11 @@ func (r Repository) UpdateByID(ctx context.Context, id string, title string, con
 func (r Repository) UpdateStatusByID(ctx context.Context, id string, status bool) error {
 	// language=SQL
 	_, err := pgctx.Exec(ctx, `update todos set is_active = $1 where id = $2`, status, id)
+	return err
+}
+
+func (r Repository) UpdateAssignIDByID(ctx context.Context, id string, assignID *string) error {
+	// language=SQL
+	_, err := pgctx.Exec(ctx, `update todos set assign_id = $1 where id = $2`, assignID, id)
 	return err
 }

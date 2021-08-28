@@ -28,7 +28,14 @@ func PanicRecovery(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				utils.JSONError(w, "Internal Server Error", http.StatusInternalServerError)
+				errorMessage := "Internal Server Error"
+
+				// extract error message
+				if e, ok := err.(error); ok {
+					errorMessage = e.Error()
+				}
+
+				_ = utils.JSONError(w, errorMessage, http.StatusInternalServerError)
 				log.Println(err)
 				debug.PrintStack()
 			}

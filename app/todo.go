@@ -98,5 +98,19 @@ func (w todoWrap) ChangeStatusTodo(ctx *hime.Context) error {
 }
 
 func (w todoWrap) MakeAssign(ctx *hime.Context) error {
+	var assignMemberID string
+	params := mux.Vars(ctx.Request)
+	if params["member_id"] == "" {
+		u, _ := member.GetMemberFromContext(ctx)
+		assignMemberID = u.ID
+	} else {
+		assignMemberID = params["member_id"]
+	}
 
+	return w.t.AssignToMember(ctx, params["todo_id"], assignMemberID)
+}
+
+func (w todoWrap) RemoveAssign(ctx *hime.Context) error {
+	params := mux.Vars(ctx.Request)
+	return w.t.RemoveAssign(ctx, params["todo_id"])
 }

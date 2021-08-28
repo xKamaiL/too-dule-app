@@ -2,22 +2,28 @@ package todo
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"github.com/xkamail/too-dule-app/member"
 	"github.com/xkamail/too-dule-app/pkg/config"
 	"log"
 	"time"
 )
 
 type Service struct {
-	repo *Repository
-	cfg  *config.Config
+	repo       *Repository
+	cfg        *config.Config
+	memberRepo *member.Repository
 	// logging
 	log interface{}
 }
 
 func NewTodo() *Service {
+	memberRepo := member.NewRepo()
 	return &Service{
-		repo: &Repository{},
-		cfg:  config.Load(),
+		repo:       &Repository{},
+		cfg:        config.Load(),
+		memberRepo: memberRepo,
 	}
 }
 
@@ -50,12 +56,18 @@ func (t Service) List(ctx context.Context, param ListParam) ([]*Todo, error) {
 }
 
 func (t Service) AssignToMember(ctx context.Context, todoID string, memberID string) error {
+	m, err := t.memberRepo.FindByID(ctx, memberID)
+	// member not found
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("member not found")
+	}
 
-	return nil
+	return t.repo.UpdateAssignIDByID(ctx, todoID, &m.ID)
 }
 
 func (t Service) RemoveAssign(ctx context.Context, todoID string) error {
-	return nil
+	return t.repo.UpdateAssignIDByID(ctx, todoID, nil)
 }
 
 type UpdateParam struct {

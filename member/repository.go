@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+func NewRepo() *Repository {
+	return &Repository{}
+}
+
 type Repository struct {
 }
 

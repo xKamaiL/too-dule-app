@@ -33,3 +33,20 @@ func (t Service) IsOwnerOnly(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+// set to-do entity from middleware
+func (t Service) SetWithParams(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		todo, err := t.repo.FindByID(r.Context(), vars["todo_id"])
+		// not found
+		if err != nil {
+			_ = utils.JSONError(w, "todo is not found", http.StatusNotFound)
+			return
+		}
+		// set current to-do into a context
+		ctx := NewFromContext(r.Context(), *todo)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}

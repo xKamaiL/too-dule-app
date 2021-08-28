@@ -9,6 +9,6 @@ create table todos
 
     due_date   timestamptz not null,
     created_at timestamptz not null default now(),
-
+    assign_id  uuid        null,
     primary key (id)
 );
