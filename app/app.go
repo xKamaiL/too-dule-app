@@ -68,12 +68,13 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 		todoRouter.Handle("/{todo_id}/assign/{member_id}", hime.Handler(t.MakeAssign)).Methods(http.MethodPost)
 
 		// /{todo_id}/re-assign : Remove Assign
-		todoRouter.Handle("/{todo_id}/assign/{member_id}", hime.Handler(t.RemoveAssign)).Methods(http.MethodPost)
+		todoRouter.Handle("/{todo_id}/re-assign", hime.Handler(t.RemoveAssign)).Methods(http.MethodPost)
 
 		// /{todo_id}/status : Change Status
 		todoRouter.Handle("/{todo_id}/status", t.t.IsOwnerOnly(hime.Handler(t.ChangeStatusTodo))).Methods(http.MethodPut)
 
 		// DELETE {todo_id}
+		todoRouter.Handle("/{todo_id}", t.t.IsOwnerOnly(hime.Handler(t.RemoveTodo))).Methods(http.MethodDelete)
 
 	}
 

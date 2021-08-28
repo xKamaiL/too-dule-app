@@ -98,3 +98,9 @@ func (r Repository) UpdateAssignIDByID(ctx context.Context, id string, assignID 
 	_, err := pgctx.Exec(ctx, `update todos set assign_id = $1 where id = $2`, assignID, id)
 	return err
 }
+
+func (r Repository) DeleteByID(ctx context.Context, id string) error {
+	// language=SQL
+	_, err := pgctx.Exec(ctx, `delete from todos where id = $1`, id)
+	return err
+}

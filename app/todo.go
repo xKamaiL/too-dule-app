@@ -114,3 +114,19 @@ func (w todoWrap) RemoveAssign(ctx *hime.Context) error {
 	params := mux.Vars(ctx.Request)
 	return w.t.RemoveAssign(ctx, params["todo_id"])
 }
+
+func (w todoWrap) RemoveTodo(ctx *hime.Context) error {
+	// params := mux.Vars(ctx.Request)
+	// or get from context
+	item := todo.GetFromContext(ctx)
+	err := w.t.Delete(ctx, item.ID)
+	if err != nil {
+		return err
+	}
+
+	// write no content
+	ctx.ResponseWriter().WriteHeader(http.StatusNoContent)
+
+	return nil
+
+}

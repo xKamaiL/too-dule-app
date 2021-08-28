@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/xkamail/too-dule-app/member"
 	"github.com/xkamail/too-dule-app/pkg/utils"
@@ -25,7 +26,8 @@ func (t Service) IsOwnerOnly(next http.Handler) http.Handler {
 		}
 		// check owner_id != user.id
 		if todo.OwnerID != user.ID {
-			_ = utils.JSONError(w, "you cannot update this todo", http.StatusUnauthorized)
+			fmt.Println("check ", todo.OwnerID, user.ID)
+			_ = utils.JSONError(w, "you cannot access this todo", http.StatusUnauthorized)
 			return
 		}
 		// set current to-do into a context

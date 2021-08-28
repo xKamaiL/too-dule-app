@@ -87,3 +87,8 @@ func (t Service) Update(ctx context.Context, todoID string, params UpdateParam) 
 func (t Service) ChangeStatus(ctx context.Context, todoID string, status bool) error {
 	return t.repo.UpdateStatusByID(ctx, todoID, status)
 }
+
+func (t Service) Delete(ctx context.Context, todoID string) error {
+	//
+	return t.repo.DeleteByID(ctx, todoID)
+}
