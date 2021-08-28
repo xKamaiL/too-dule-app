@@ -2,6 +2,7 @@ package todo
 
 import (
 	"context"
+	"database/sql"
 	"github.com/acoshift/pgsql"
 	"github.com/acoshift/pgsql/pgctx"
 	"github.com/xkamail/too-dule-app/member"
@@ -43,8 +44,18 @@ func (r Repository) FindAll(ctx context.Context) ([]*Todo, error) {
 	return result, nil
 }
 
-func (r Repository) FindByID(ctx context.Context, id string) (Todo, error) {
-	panic("implement me")
+func (r Repository) FindByID(ctx context.Context, id string) (*Todo, error) {
+	result := new(Todo)
+	// language=SQL
+	row := pgctx.QueryRow(ctx, `select todos.id, todos.owner_id, todos.content, todos.is_active,
+       todos.due_date,todos.created_at
+		from todos where todos.id = $1 limit 1`, id)
+
+	if err := row.Scan(&result.ID, &result.OwnerID, &result.Content, &result.IsActive, &result.DueDate, &result.CreatedAt); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 type createTodoModel struct {
@@ -62,4 +73,17 @@ func (r Repository) Insert(ctx context.Context, data createTodoModel) (insertID 
 		return row.Scan(&insertID)
 	})
 	return insertID, err
+}
+
+// no struct
+func (r Repository) UpdateByID(ctx context.Context, id string, title string, content string) (sql.Result, error) {
+	// language=SQL
+	result, err := pgctx.Exec(ctx, "update todos set content = $1,title = $2 where id = $3", content, title, id)
+	return result, err
+}
+
+func (r Repository) UpdateStatusByID(ctx context.Context, id string, status bool) error {
+	// language=SQL
+	_, err := pgctx.Exec(ctx, `update todos set is_active = $1 where id = $2`, status, id)
+	return err
 }

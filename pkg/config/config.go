@@ -40,7 +40,7 @@ func Init() {
 	config.Redis.Password = r.String("REDIS_PASSWORD")
 
 	config.JWTSecretKey = r.StringDefault("JWT_SECRET_KEY", "xkamail")
-	config.RateLimitAllow = r.IntDefault("RATE_LIMIT_ALLOW", 100)
+	config.RateLimitAllow = r.IntDefault("wRATE_LIMIT_ALLOW", 100)
 }
 
 func Load() *Config {

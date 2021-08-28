@@ -59,6 +59,16 @@ func New(app *hime.App, db *sql.DB, redisClient *redis.Client) http.Handler {
 		todoRouter.Handle("/list", hime.Handler(t.getTodo)).Methods(http.MethodGet)
 
 		todoRouter.Handle("", middlewares.RateLimit(hime.Handler(t.createNewTodo))).Methods(http.MethodPost)
+		// update to-do
+		todoRouter.Handle("/{todo_id}", t.t.IsOwnerOnly(hime.Handler(t.UpdateTodo))).Methods(http.MethodPut)
+
+		// /{todo_id}/assign : Assign
+
+		// /{todo_id}/re-assign : Remove Assign
+
+		// /{todo_id}/status : Change Status
+
+		todoRouter.Handle("/{todo_id}/status", t.t.IsOwnerOnly(hime.Handler(t.ChangeStatusTodo))).Methods(http.MethodPut)
 
 	}
 

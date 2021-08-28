@@ -59,14 +59,19 @@ func (t Service) RemoveAssign(ctx context.Context, todoID string) error {
 }
 
 type UpdateParam struct {
-	Title   string
-	Content string
+	Title   string `json:"title" validate:"required,min=10,max=255"`
+	Content string `json:"content" validate:"required,min=1,max=2000"`
 }
 
-func (t Service) Update(ctx context.Context, params UpdateParam) error {
-	return nil
+func (t Service) Update(ctx context.Context, todoID string, params UpdateParam) (*Todo, error) {
+	_, err := t.repo.UpdateByID(ctx, todoID, params.Title, params.Content)
+	if err != nil {
+		return nil, err
+	}
+	todo, err := t.repo.FindByID(ctx, todoID)
+	return todo, err
 }
 
-func (t Service) ChangeStatus(ctx context.Context, status bool) error {
-	return nil
+func (t Service) ChangeStatus(ctx context.Context, todoID string, status bool) error {
+	return t.repo.UpdateStatusByID(ctx, todoID, status)
 }

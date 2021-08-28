@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 	"github.com/moonrhythm/hime"
 	"github.com/xkamail/too-dule-app/member"
 	"github.com/xkamail/too-dule-app/pkg/utils"
@@ -42,7 +43,6 @@ func (w todoWrap) createNewTodo(ctx *hime.Context) error {
 
 	err = validate.Struct(p)
 	if err != nil {
-		log.Println(err)
 		return utils.ValidatorError(ctx, err)
 	}
 	user, _ := member.GetMemberFromContext(ctx)
@@ -55,4 +55,44 @@ func (w todoWrap) createNewTodo(ctx *hime.Context) error {
 	}
 	ctx.ResponseWriter().WriteHeader(http.StatusCreated)
 	return nil
+}
+
+func (w todoWrap) UpdateTodo(ctx *hime.Context) error {
+	var p todo.UpdateParam
+	err := ctx.BindJSON(&p)
+	if err != nil {
+		return utils.JSONError(ctx.ResponseWriter(), fmt.Sprintf("json error %s", err.Error()), http.StatusInternalServerError)
+	}
+
+	err = validate.Struct(p)
+	if err != nil {
+		return utils.ValidatorError(ctx, err)
+	}
+	todoFromCtx := todo.GetFromContext(ctx)
+
+	_, err = w.t.Update(ctx, todoFromCtx.ID, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// any member can change it
+func (w todoWrap) ChangeStatusTodo(ctx *hime.Context) error {
+
+	// quick validate
+	var p struct {
+		Status bool `json:"status" validate:"required,bool"`
+	}
+	err := ctx.BindJSON(&p)
+	if err != nil {
+		return utils.JSONError(ctx.ResponseWriter(), fmt.Sprintf("json error %s", err.Error()), http.StatusInternalServerError)
+	}
+	err = validate.Struct(p)
+	if err != nil {
+		return utils.ValidatorError(ctx, err)
+	}
+
+	return w.t.ChangeStatus(ctx, mux.Vars(ctx.Request)["todo_id"], p.Status)
 }
